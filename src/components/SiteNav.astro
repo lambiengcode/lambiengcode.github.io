@@ -1,0 +1,16 @@
+---
+interface Props {
+  active: "home" | "blog";
+}
+const { active } = Astro.props;
+---
+
+<div class="tabbar">
+  <a class="tab" class:list={[{ active: active === "home" }]} href="/">
+    <span class="dot"></span>~/lambiengcode
+  </a>
+  <a class="tab" class:list={[{ active: active === "blog" }]} href="/blog/">
+    <span class="dot"></span>blog/
+  </a>
+  <div class="tabbar-fill"></div>
+</div>

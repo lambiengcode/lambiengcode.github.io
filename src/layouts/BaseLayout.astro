@@ -1,0 +1,184 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  type?: "website" | "article";
+  publishedTime?: Date;
+  jsonLd?: Record<string, unknown>;
+}
+
+const { title, description, type = "website", publishedTime, jsonLd } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImageURL = new URL("/avatar.png", Astro.site);
+const siteName = "lambiengcode";
+const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="lambiengcode" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@lambiengcode" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${siteName} blog`} href="/rss.xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+  </head>
+  <body>
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <slot />
+    <script>
+      // Ambient background: a packet-routing network. Nodes drift slowly;
+      // edges connect nearby nodes; the occasional bright pulse hops
+      // between two connected nodes, standing in for a media packet being
+      // forwarded — a nod to the SFU/real-time-media subject of the site.
+      (() => {
+        const canvas = document.getElementById("bg-canvas");
+        if (!(canvas instanceof HTMLCanvasElement)) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const ACCENT = "57, 211, 83";
+        const GRID = "35, 43, 55";
+        const NODE_COUNT = 42;
+        const MAX_DIST = 150;
+        const GRID_SIZE = 48;
+
+        let w = 0, h = 0, dpr = 1, nodes = [], packets = [], raf = 0;
+
+        function resize() {
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          w = window.innerWidth;
+          h = window.innerHeight;
+          canvas.width = w * dpr;
+          canvas.height = h * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function makeNodes() {
+          nodes = Array.from({ length: NODE_COUNT }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.12,
+            vy: (Math.random() - 0.5) * 0.12,
+          }));
+        }
+
+        function maybeSpawnPacket() {
+          if (packets.length > 3 || Math.random() > 0.02) return;
+          for (let tries = 0; tries < 10; tries++) {
+            const a = nodes[(Math.random() * nodes.length) | 0];
+            const b = nodes[(Math.random() * nodes.length) | 0];
+            if (a === b) continue;
+            if (Math.hypot(a.x - b.x, a.y - b.y) < MAX_DIST) {
+              packets.push({ a, b, t: 0 });
+              return;
+            }
+          }
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, w, h);
+
+          ctx.strokeStyle = `rgba(${GRID}, 0.5)`;
+          ctx.lineWidth = 1;
+          for (let x = 0; x < w; x += GRID_SIZE) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+          }
+          for (let y = 0; y < h; y += GRID_SIZE) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+          }
+
+          if (!reduceMotion) {
+            for (const n of nodes) {
+              n.x += n.vx; n.y += n.vy;
+              if (n.x < 0 || n.x > w) n.vx *= -1;
+              if (n.y < 0 || n.y > h) n.vy *= -1;
+            }
+          }
+
+          for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+              const a = nodes[i], b = nodes[j];
+              const d = Math.hypot(a.x - b.x, a.y - b.y);
+              if (d < MAX_DIST) {
+                ctx.strokeStyle = `rgba(${ACCENT}, ${(1 - d / MAX_DIST) * 0.16})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+              }
+            }
+          }
+
+          ctx.fillStyle = `rgba(${ACCENT}, 0.35)`;
+          for (const n of nodes) {
+            ctx.beginPath(); ctx.arc(n.x, n.y, 1.6, 0, Math.PI * 2); ctx.fill();
+          }
+
+          if (!reduceMotion) {
+            maybeSpawnPacket();
+            packets = packets.filter((p) => p.t < 1);
+            for (const p of packets) {
+              p.t += 0.02;
+              const x = p.a.x + (p.b.x - p.a.x) * p.t;
+              const y = p.a.y + (p.b.y - p.a.y) * p.t;
+              const fade = Math.sin(p.t * Math.PI);
+              ctx.fillStyle = `rgba(${ACCENT}, ${0.9 * fade})`;
+              ctx.beginPath(); ctx.arc(x, y, 2.4, 0, Math.PI * 2); ctx.fill();
+              ctx.strokeStyle = `rgba(${ACCENT}, ${0.5 * fade})`;
+              ctx.lineWidth = 3;
+              ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.stroke();
+            }
+            raf = requestAnimationFrame(draw);
+          }
+        }
+
+        resize();
+        makeNodes();
+        window.addEventListener("resize", () => {
+          cancelAnimationFrame(raf);
+          resize();
+          draw();
+          if (!reduceMotion) raf = requestAnimationFrame(draw);
+        });
+        draw();
+      })();
+    </script>
+  </body>
+</html>

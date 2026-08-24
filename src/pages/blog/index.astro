@@ -1,0 +1,44 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteNav from "../../components/SiteNav.astro";
+import PostCard from "../../components/PostCard.astro";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout
+  title="blog"
+  description="A curated, AI-summarized feed of what's moving in WebRTC and Media over QUIC — pulled daily from LiveKit, WebRTC.ventures, moq.dev, webrtcHacks, BlogGeek.me, and more."
+>
+  <SiteNav active="blog" />
+
+  <div class="frame">
+    <div class="cmd"><span class="sigil">&gt;</span><span>~</span><span>ls blog/<span class="cursor"></span></span></div>
+
+    <section>
+      <div class="heading"><span class="idx">rt</span><h2>real-time media, curated</h2></div>
+      <p style="color: var(--text-dim); max-width: 62ch; margin: -8px 0 22px; font-size: 14.5px;">
+        A scheduled pipeline pulls new posts from WebRTC and Media-over-QUIC sources, summarizes
+        each with an LLM, and publishes it here — every entry links back to the original.
+      </p>
+
+      {posts.length === 0 ? (
+        <p style="color: var(--text-faint); font-family: 'JetBrains Mono', monospace; font-size: 13.5px;">
+          No posts yet — the fetch pipeline hasn't run. See <code>scripts/fetch-articles.mjs</code>.
+        </p>
+      ) : (
+        <div class="postlist">
+          {posts.map((post) => <PostCard post={post} />)}
+        </div>
+      )}
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <span class="status"><span class="led"></span>{posts.length} posts tracked</span>
+    <a href="/rss.xml">rss feed →</a>
+  </footer>
+</BaseLayout>

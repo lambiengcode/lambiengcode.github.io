@@ -1,0 +1,57 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteNav from "../../components/SiteNav.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { title, description, pubDate, sourceName, sourceUrl, tags } = post.data;
+const { Content } = await post.render();
+const dateStr = pubDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  author: { "@type": "Person", name: "lambiengcode" },
+  isBasedOn: sourceUrl,
+};
+---
+
+<BaseLayout title={title} description={description} type="article" publishedTime={pubDate} jsonLd={jsonLd}>
+  <SiteNav active="blog" />
+
+  <div class="frame">
+    <div class="post-header">
+      <a class="back" href="/blog/">&larr; back to blog/</a>
+      <h1>{title}</h1>
+      <div class="post-meta-row">
+        <time datetime={pubDate.toISOString()}>{dateStr}</time>
+        <span>·</span>
+        <span>via {sourceName}</span>
+        {tags.map((t) => <span class="tag">#{t}</span>)}
+      </div>
+    </div>
+
+    <div class="post-body">
+      <Content />
+    </div>
+
+    <div class="attribution">
+      Originally covered by <strong>{sourceName}</strong> — <a href={sourceUrl} target="_blank" rel="noopener">read the full article →</a>
+    </div>
+  </div>
+</BaseLayout>

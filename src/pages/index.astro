@@ -1,0 +1,126 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteNav from "../components/SiteNav.astro";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "lambiengcode",
+  url: Astro.site?.toString(),
+  jobTitle: "Software Engineer — Real-Time Media & SFU Infrastructure",
+  sameAs: [
+    "https://github.com/lambiengcode",
+    "https://twitter.com/lambiengcode",
+    "https://linkedin.com/in/lambiengcode/",
+  ],
+};
+---
+
+<BaseLayout
+  title="lambiengcode"
+  description="Software engineer building real-time media infrastructure — SFUs, WebRTC internals, and Media over QUIC. Open-source: waterbus, reify."
+  jsonLd={jsonLd}
+>
+  <SiteNav active="home" />
+
+  <div class="frame">
+    <div class="cmd"><span class="sigil">&gt;</span><span>~</span><span>whoami<span class="cursor"></span></span></div>
+
+    <div class="hero">
+      <div class="avatar-wrap">
+        <img src="/avatar.png" alt="lambiengcode mascot avatar" width="96" height="96" loading="eager" fetchpriority="high" />
+      </div>
+      <div>
+        <h1><span class="prompt-sym">&gt;</span> lambiengcode</h1>
+        <p class="role">Software Engineer — Real-Time Media &amp; SFU Infrastructure</p>
+        <p class="tagline">I build the systems that route video and audio with as little delay as possible — selective forwarding units, WebRTC internals, and the emerging Media-over-QUIC stack.</p>
+      </div>
+    </div>
+
+    <section class="about">
+      <div class="heading"><span class="idx">01</span><h2>about</h2></div>
+      <p>I work on <strong>real-time media infrastructure</strong> — the layer between "someone hits call" and video actually arriving somewhere else in under 100ms. Most of that work lives in SFUs (selective forwarding units), congestion control, and simulcast/dynacast logic that decides which stream quality a viewer actually needs.</p>
+      <p>Lately I've been following <strong>Media over QUIC (MoQ)</strong> closely — the idea that live media can ride on a general transport instead of a bespoke one is the kind of protocol shift I like tracking from the inside. See the <a href="/blog/">blog</a> for a running feed of what's moving in that space.</p>
+      <p>Most of what I ship is open source. If you're debugging a call that "just works" or "just doesn't," there's a decent chance the SFU underneath looks like something I've worked on.</p>
+    </section>
+
+    <section>
+      <div class="heading"><span class="idx">02</span><h2>stack</h2></div>
+      <div class="stackgrid">
+        <div class="stackitem"><span class="bit"></span>Rust</div>
+        <div class="stackitem"><span class="bit"></span>WebRTC</div>
+        <div class="stackitem"><span class="bit"></span>Media over QUIC</div>
+        <div class="stackitem"><span class="bit"></span>Flutter / Dart</div>
+        <div class="stackitem dim"><span class="bit"></span>gRPC</div>
+        <div class="stackitem dim"><span class="bit"></span>Docker</div>
+        <div class="stackitem dim"><span class="bit"></span>Kubernetes</div>
+        <div class="stackitem dim"><span class="bit"></span>PostgreSQL</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="heading"><span class="idx">03</span><h2>projects</h2></div>
+      <div class="projects">
+        <div class="project flagship">
+          <div class="project-top">
+            <span class="project-name"><a href="https://github.com/lambiengcode/waterbus" target="_blank" rel="noopener">waterbus</a></span>
+            <span class="project-tag">flagship</span>
+          </div>
+          <p class="project-desc">An open-source Selective Forwarding Unit (SFU) for real-time video — built for low-latency routing at scale, with an edge/relay split and a dashboard for room and stream management.</p>
+          <div class="project-meta">
+            <span><span class="lang-dot" style="background:#dea584"></span>Rust</span>
+            <span><span class="lang-dot" style="background:#39d353"></span>WebRTC</span>
+            <a href="https://github.com/lambiengcode/waterbus" target="_blank" rel="noopener">github.com/lambiengcode/waterbus →</a>
+          </div>
+        </div>
+
+        <div class="project">
+          <div class="project-top">
+            <span class="project-name"><a href="https://github.com/lambiengcode/reify" target="_blank" rel="noopener">reify</a></span>
+          </div>
+          <p class="project-desc">A local-first context engine for coding agents. Reify builds a knowledge graph of large, unfamiliar codebases so an LLM can understand and safely change legacy code — no data leaves the machine.</p>
+          <div class="project-meta">
+            <span><span class="lang-dot" style="background:#dea584"></span>Rust</span>
+            <span><span class="lang-dot" style="background:#39d353"></span>MCP</span>
+            <a href="https://github.com/lambiengcode/reify" target="_blank" rel="noopener">github.com/lambiengcode/reify →</a>
+          </div>
+        </div>
+
+        <div class="project editme">
+          <div class="project-top">
+            <span class="project-name">project-three</span>
+            <span class="project-tag">coming soon</span>
+          </div>
+          <p class="project-desc">Slot open. Swap this card in once there's a third project worth linking.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="heading"><span class="idx">04</span><h2>contact</h2></div>
+      <div class="contact-grid">
+        <a class="contact-link" href="https://github.com/lambiengcode" target="_blank" rel="noopener">
+          <span class="label">GitHub</span>
+          <span class="value">@lambiengcode</span>
+        </a>
+        <a class="contact-link" href="mailto:lambiengcode@gmail.com">
+          <span class="label">Email</span>
+          <span class="value">lambiengcode@gmail.com</span>
+        </a>
+        <a class="contact-link" href="https://twitter.com/lambiengcode" target="_blank" rel="noopener">
+          <span class="label">X / Twitter</span>
+          <span class="value">@lambiengcode</span>
+        </a>
+        <a class="contact-link" href="https://linkedin.com/in/lambiengcode/" target="_blank" rel="noopener">
+          <span class="label">LinkedIn</span>
+          <span class="value">/in/lambiengcode</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <span class="status"><span class="led"></span>open to interesting problems</span>
+    <span>built with a green terminal and no border-radius</span>
+  </footer>
+</BaseLayout>

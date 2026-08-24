@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lambiengcode.github.io/sitemap-index.xml
