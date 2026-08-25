@@ -54,8 +54,26 @@ path needed.
 4. Optional: add the `GEMINI_API_KEY` secret (see above) so the daily
    content-fetch workflow produces AI summaries instead of raw excerpts.
 
-## Before going live
+## SEO
 
-- `public/avatar.png` doubles as the Open Graph image; it's a 512×512
-  square, not the usual 1200×630 OG banner — swap in a proper banner if
-  social link previews matter to you.
+On-page SEO is done: sitemap, RSS, canonical URLs, per-page meta
+descriptions, Open Graph + Twitter cards (`public/og-image.png`, a proper
+1200×630 banner), JSON-LD (`Person` + `BlogPosting`), a favicon with an
+`.ico` fallback, and `/blog/tag/[tag]/` archive pages so tags are real
+internal links instead of dead text.
+
+What's *not* solved by code, and won't be by more of it:
+
+- **Submit to search engines.** Verify the domain in
+  [Google Search Console](https://search.google.com/search-console) and
+  [Bing Webmaster Tools](https://www.bing.com/webmasters), then submit
+  `https://lambiengcode.github.io/sitemap-index.xml`. Until you do this,
+  Google finds the site on its own schedule instead of being told directly.
+- **Backlinks and domain age.** This is what actually drives ranking for
+  competitive terms, and it only comes from time, real inbound links, and
+  people citing the site elsewhere — no config change produces it.
+- **Content depth.** The blog posts are short curated summaries with a
+  link to the original — good for a link-blog, but they won't outrank the
+  source article for its own keywords. They're most useful for your own
+  branded/long-tail search traffic, not for competing head-to-head on
+  "WebRTC vs MoQ"-type queries.

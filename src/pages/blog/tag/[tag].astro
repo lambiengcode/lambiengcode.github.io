@@ -1,0 +1,43 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteNav from "../../../components/SiteNav.astro";
+import PostCard from "../../../components/PostCard.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      posts: posts
+        .filter((p) => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`#${tag}`}
+  description={`${posts.length} post${posts.length === 1 ? "" : "s"} tagged #${tag} — curated WebRTC and Media over QUIC coverage from lambiengcode.`}
+>
+  <SiteNav active="blog" />
+
+  <div class="frame">
+    <div class="cmd"><span class="sigil">&gt;</span><span>~</span><span>grep -l {tag} blog/*<span class="cursor"></span></span></div>
+
+    <section>
+      <div class="heading"><span class="idx">#</span><h2>tagged: {tag}</h2></div>
+      <p style="color: var(--text-dim); max-width: 62ch; margin: -8px 0 22px; font-size: 14.5px;">
+        <a href="/blog/">&larr; all posts</a> · {posts.length} post{posts.length === 1 ? "" : "s"}
+      </p>
+      <div class="postlist">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
