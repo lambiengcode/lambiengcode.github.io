@@ -1,6 +1,6 @@
 ---
 interface Props {
-  active: "home" | "blog";
+  active: "home" | "blog" | "stats";
 }
 const { active } = Astro.props;
 ---
@@ -11,6 +11,9 @@ const { active } = Astro.props;
   </a>
   <a class="tab" class:list={[{ active: active === "blog" }]} href="/blog/">
     <span class="dot"></span>blog/
+  </a>
+  <a class="tab" class:list={[{ active: active === "stats" }]} href="/stats/">
+    <span class="dot"></span>stats/
   </a>
   <div class="tabbar-fill"></div>
 </div>

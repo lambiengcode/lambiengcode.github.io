@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteNav from "../../components/SiteNav.astro";
+import GithubCta from "../../components/GithubCta.astro";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -53,5 +54,7 @@ const jsonLd = {
     <div class="attribution">
       Originally covered by <strong>{sourceName}</strong> — <a href={sourceUrl} target="_blank" rel="noopener">read the full article →</a>
     </div>
+
+    <GithubCta variant="post" />
   </div>
 </BaseLayout>

@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteNav from "../../components/SiteNav.astro";
 import PostCard from "../../components/PostCard.astro";
+import GithubCta from "../../components/GithubCta.astro";
 
 const posts = (await getCollection("blog")).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
@@ -17,6 +18,8 @@ const posts = (await getCollection("blog")).sort(
 
   <div class="frame">
     <div class="cmd"><span class="sigil">&gt;</span><span>~</span><span>ls blog/<span class="cursor"></span></span></div>
+
+    <GithubCta variant="hero" />
 
     <section>
       <div class="heading"><span class="idx">rt</span><h2>real-time media, curated</h2></div>

@@ -1,0 +1,129 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteNav from "../../components/SiteNav.astro";
+
+const GOAL_FOLLOWERS = 1000;
+const GOAL_STARS = 1000;
+const TRACKED_REPOS = [
+  { owner: "waterbustech", name: "waterbus" },
+  { owner: "lambiengcode", name: "reify" },
+];
+
+async function safeFetchJson(url) {
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: "application/vnd.github+json", "User-Agent": "lambiengcode-site" },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+const user = await safeFetchJson("https://api.github.com/users/lambiengcode");
+const repoResults = await Promise.all(
+  TRACKED_REPOS.map(({ owner, name }) => safeFetchJson(`https://api.github.com/repos/${owner}/${name}`))
+);
+
+const repos = TRACKED_REPOS.map(({ owner, name }, i) => {
+  const r = repoResults[i];
+  return {
+    name,
+    stars: r?.stargazers_count ?? null,
+    forks: r?.forks_count ?? null,
+    url: r?.html_url ?? `https://github.com/${owner}/${name}`,
+    language: r?.language ?? null,
+  };
+});
+
+const dataAvailable = Boolean(user) || repos.some((r) => r.stars !== null);
+
+const followers = user?.followers ?? null;
+const following = user?.following ?? null;
+const publicRepos = user?.public_repos ?? null;
+
+const totalStars = repos.reduce((sum, r) => sum + (r.stars ?? 0), 0);
+const topRepo = repos.reduce(
+  (best, r) => ((r.stars ?? -1) > (best.stars ?? -1) ? r : best),
+  repos[0]
+);
+
+function pct(value, goal) {
+  if (value === null) return 0;
+  return Math.max(0, Math.min(100, (value / goal) * 100));
+}
+---
+
+<BaseLayout
+  title="stats"
+  description="Live GitHub numbers for lambiengcode — followers and stars across waterbus and reify, tracked against a 1,000/1,000 goal."
+>
+  <SiteNav active="stats" />
+
+  <div class="frame">
+    <div class="cmd"><span class="sigil">&gt;</span><span>~</span><span>curl api.github.com/users/lambiengcode<span class="cursor"></span></span></div>
+
+    <section>
+      <div class="heading"><span class="idx">01</span><h2>profile</h2></div>
+      {!dataAvailable && (
+        <p style="color: var(--text-faint); font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+          GitHub API didn't respond at build time (rate limit or network) — rebuild to refresh.
+        </p>
+      )}
+      <div class="stackgrid">
+        <div class="stackitem"><span class="bit"></span>followers: {followers ?? "—"}</div>
+        <div class="stackitem dim"><span class="bit"></span>following: {following ?? "—"}</div>
+        <div class="stackitem dim"><span class="bit"></span>public repos: {publicRepos ?? "—"}</div>
+        <div class="stackitem"><span class="bit"></span>total stars tracked: {totalStars}</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="heading"><span class="idx">02</span><h2>goal: 1,000 / 1,000</h2></div>
+      <p style="color: var(--text-dim); max-width: 62ch; margin: -8px 0 20px; font-size: 14.5px;">
+        The original target: 1,000+ followers, and at least one repo past 1,000 stars.
+      </p>
+
+      <div class="statgoal">
+        <div class="statgoal-row">
+          <span class="statgoal-label">followers</span>
+          <span class="statgoal-num">{followers ?? "—"} <span class="statgoal-of">/ {GOAL_FOLLOWERS}</span></span>
+        </div>
+        <div class="progress"><div class="progress-fill" style={`width:${pct(followers, GOAL_FOLLOWERS)}%`}></div></div>
+      </div>
+
+      <div class="statgoal">
+        <div class="statgoal-row">
+          <span class="statgoal-label">top repo ({topRepo.name})</span>
+          <span class="statgoal-num">{topRepo.stars ?? "—"} <span class="statgoal-of">/ {GOAL_STARS}</span></span>
+        </div>
+        <div class="progress"><div class="progress-fill" style={`width:${pct(topRepo.stars, GOAL_STARS)}%`}></div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="heading"><span class="idx">03</span><h2>repos</h2></div>
+      <div class="projects">
+        {repos.map((r) => (
+          <div class="project">
+            <div class="project-top">
+              <span class="project-name"><a href={r.url} target="_blank" rel="noopener">{r.name}</a></span>
+              <span class="project-tag">{r.stars ?? "—"} ★</span>
+            </div>
+            <div class="project-meta">
+              {r.language && <span><span class="lang-dot" style="background:#dea584"></span>{r.language}</span>}
+              <span>forks: {r.forks ?? "—"}</span>
+              <a href={r.url} target="_blank" rel="noopener">{r.url.replace("https://", "")} →</a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <span class="status"><span class="led"></span>snapshot taken at build time</span>
+    <span>rebuilds daily via the content-fetch workflow</span>
+  </footer>
+</BaseLayout>

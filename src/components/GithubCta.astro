@@ -1,0 +1,27 @@
+---
+interface Props {
+  variant?: "hero" | "post" | "footer";
+}
+const { variant = "hero" } = Astro.props;
+
+const COPY = {
+  hero: "If you build with real-time media, a follow or a star helps more than you'd think.",
+  post: "Found this roundup useful? A follow or a star goes a long way.",
+  footer: "Still here? A follow or a star costs you ten seconds.",
+};
+---
+
+<div class="cta">
+  <p class="cta-text">{COPY[variant]}</p>
+  <div class="cta-actions">
+    <a class="cta-btn primary" href="https://github.com/lambiengcode" target="_blank" rel="noopener">
+      + follow @lambiengcode
+    </a>
+    <a class="cta-btn" href="https://github.com/waterbustech/waterbus" target="_blank" rel="noopener">
+      ★ star waterbus
+    </a>
+    <a class="cta-btn" href="https://github.com/lambiengcode/reify" target="_blank" rel="noopener">
+      ★ star reify
+    </a>
+  </div>
+</div>

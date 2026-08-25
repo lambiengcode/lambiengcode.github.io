@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteNav from "../components/SiteNav.astro";
+import GithubCta from "../components/GithubCta.astro";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -37,6 +38,8 @@ const jsonLd = {
       </div>
     </div>
 
+    <GithubCta variant="hero" />
+
     <section class="about">
       <div class="heading"><span class="idx">01</span><h2>about</h2></div>
       <p>I work on <strong>real-time media infrastructure</strong> — the layer between "someone hits call" and video actually arriving somewhere else in under 100ms. Most of that work lives in SFUs (selective forwarding units), congestion control, and simulcast/dynacast logic that decides which stream quality a viewer actually needs.</p>
@@ -63,14 +66,14 @@ const jsonLd = {
       <div class="projects">
         <div class="project flagship">
           <div class="project-top">
-            <span class="project-name"><a href="https://github.com/lambiengcode/waterbus" target="_blank" rel="noopener">waterbus</a></span>
+            <span class="project-name"><a href="https://github.com/waterbustech/waterbus" target="_blank" rel="noopener">waterbus</a></span>
             <span class="project-tag">flagship</span>
           </div>
-          <p class="project-desc">An open-source Selective Forwarding Unit (SFU) for real-time video — built for low-latency routing at scale, with an edge/relay split and a dashboard for room and stream management.</p>
+          <p class="project-desc">An open-source, self-hostable video-calling platform built on a from-scratch SFU — Rust core, Flutter clients, low-latency routing at scale.</p>
           <div class="project-meta">
-            <span><span class="lang-dot" style="background:#dea584"></span>Rust</span>
+            <span><span class="lang-dot" style="background:#00B4AB"></span>Dart</span>
             <span><span class="lang-dot" style="background:#39d353"></span>WebRTC</span>
-            <a href="https://github.com/lambiengcode/waterbus" target="_blank" rel="noopener">github.com/lambiengcode/waterbus →</a>
+            <a href="https://github.com/waterbustech/waterbus" target="_blank" rel="noopener">github.com/waterbustech/waterbus →</a>
           </div>
         </div>
 
